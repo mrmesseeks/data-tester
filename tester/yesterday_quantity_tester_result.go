@@ -7,15 +7,19 @@ import (
 	"time"
 )
 
-type FluctuationTestResult struct {
+type YesterdayQuantityTesterResult struct {
 	OK                                   bool
-	AvgRowCountPerDay, YesterdayRowCount uint
+	AvgRowCountPerDay, YesterdayRowCount int
 	Diff                                 int
-	MaxDiff                              uint
+	MaxDiff                              int
 	StartDate, EndDate, Yesterday        time.Time
 }
 
-func (r FluctuationTestResult) ToString() string {
+func (r YesterdayQuantityTesterResult) IsOk() bool {
+	return r.OK
+}
+
+func (r YesterdayQuantityTesterResult) Show() {
 	var okString, inequality string
 	if r.OK {
 		okString = "passed :)"
@@ -35,7 +39,7 @@ func (r FluctuationTestResult) ToString() string {
 		inequality = fmt.Sprintf("%d%% greater than", r.Diff)
 	}
 
-	resultString := "Fluctuation test results\n"
+	resultString := "Yesterday Quantity test results\n"
 	resultString += fmt.Sprintf("Test %s\n", okString)
 	resultString += fmt.Sprintf("Average row count: %d (%s - %s)\n", r.AvgRowCountPerDay, from, to)
 	resultString += fmt.Sprintf("Yesterday row count: %d (%s) \n", r.YesterdayRowCount, dt)
@@ -43,5 +47,5 @@ func (r FluctuationTestResult) ToString() string {
 	resultString += fmt.Sprintf("Difference: %d%%\n", r.Diff)
 	resultString += fmt.Sprintf("Description: the yesterday row count is %s the average row count\n", inequality)
 
-	return resultString
+	fmt.Println(resultString)
 }

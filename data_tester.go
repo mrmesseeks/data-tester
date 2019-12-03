@@ -5,33 +5,90 @@ package main
 
 import (
 	"fmt"
+	"github.com/mixo/gosql"
 	"github.com/mixo/gocmd"
 	t "github.com/mixo/data-tester/tester"
 	"os"
+	"strings"
+	"sort"
 )
 
 const (
-	usage = "Usage: dataTester table-name date-column max-diff day-count"
+	basicUsage = "Usage: data-tester <test> [args]\n" +
+		"There are the following tests:\n"
+)
+
+var (
+	testers = map[string]t.Tester{
+		t.YesterdayQuantityTester{}.GetName(): t.YesterdayQuantityTester{},
+	}
 )
 
 func main() {
-	var (
-		tester  t.FluctuationTester
-		maxDiff uint
-	)
+	driver, host, port, user, password, database := getParams()
+	db := gosql.DB{driver, host, port, user, password, database}
 
-	driver, host, port, user, password, database, tableName, dateColumn, maxDiff, dayCount := getParams()
-	r := tester.TestYesterdayData(driver, host, port, user, password, database, tableName, dateColumn, maxDiff, dayCount)
-	fmt.Println(r.ToString())
+	usage := composeUsage(basicUsage, testers)
 
-	if r.OK {
+	argIndex := 0
+	testName := gocmd.GetArg(argIndex, usage)
+
+	tester := testers[testName]
+	if tester == nil {
+		fmt.Printf("A %s test doesn't exist\n", testName)
+		os.Exit(1)
+	}
+
+	argIndex++
+	args := gocmd.InjectArgs(tester.GetArgs(), argIndex, usage)
+
+	r := testers[testName].Test(db, args)
+	r.Show()
+
+	if r.IsOk() {
 		os.Exit(0)
 	} else {
 		os.Exit(1)
 	}
 }
 
-func getParams() (driver, host, port, user, password, database, tableName, dateColumn string, maxDiff, dayCount uint) {
+func composeUsage(basicUsage string, testers map[string]t.Tester) string {
+	names := []string{}
+	for name, _ := range testers {
+		names = append(names, name)
+	}
+
+	usages := []string{basicUsage}
+	sort.Strings(names)
+	for _, name := range names {
+		tester := testers[name]
+
+		usage := fmt.Sprintf("\t%s\t%s\n", tester.GetName(), tester.GetDescription())
+		usage += fmt.Sprintf("\t\t\t\t%s\n", createUsageForArgs(tester.GetArgs(), "\t\t\t\t"))
+
+		usages = append(usages, usage)
+	}
+
+	return strings.Join(usages, "\n")
+}
+
+func createUsageForArgs(args gocmd.ArgCollection, argPrefix string) (usage string) {
+	usageArgs := make([]string, 0)
+	for _, arg := range args.GetAll() {
+		usageArgs = append(usageArgs, fmt.Sprintf("<%s>", arg.GetName()))
+	}
+
+	usage = "Arguments: " + strings.Join(usageArgs, " ") + "\n"
+	argDescriptions := make([]string, 0)
+	for _, arg := range args.GetAll() {
+		argDescriptions = append(argDescriptions, fmt.Sprintf("%s<%s>\t%s", argPrefix, arg.GetName(), arg.GetDescription()))
+	}
+	usage += strings.Join(argDescriptions, "\n")
+
+	return
+}
+
+func getParams() (driver, host, port, user, password, database string) {
 	prefix := "data_tester_"
 	driver = getEnvVar(prefix + "db_driver")
 	host = getEnvVar(prefix + "db_host")
@@ -39,10 +96,6 @@ func getParams() (driver, host, port, user, password, database, tableName, dateC
 	user = getEnvVar(prefix + "db_user")
 	password = getEnvVar(prefix + "db_password")
 	database = getEnvVar(prefix + "db_name")
-	tableName = gocmd.GetArg(0, usage)
-	dateColumn = gocmd.GetArg(1, usage)
-	maxDiff = gocmd.GetUintArg(2, usage)
-	dayCount = gocmd.GetUintArg(3, usage)
 
 	return
 }
