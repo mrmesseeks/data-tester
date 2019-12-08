@@ -20,7 +20,7 @@ const (
 
 var (
 	testers = map[string]t.Tester{
-		t.YesterdayQuantityTester{}.GetName(): t.YesterdayQuantityTester{},
+		t.DayFluctuationTester{}.GetName(): t.DayFluctuationTester{},
 	}
 )
 
@@ -32,12 +32,7 @@ func main() {
 
 	argIndex := 0
 	testName := gocmd.GetArg(argIndex, usage)
-
-	tester := testers[testName]
-	if tester == nil {
-		fmt.Printf("A %s test doesn't exist\n", testName)
-		os.Exit(1)
-	}
+	tester := getTestByName(testName)
 
 	argIndex++
 	args := gocmd.InjectArgs(tester.GetArgs(), argIndex, usage)
@@ -50,6 +45,15 @@ func main() {
 	} else {
 		os.Exit(1)
 	}
+}
+
+func getTestByName(testName string) t.Tester {
+	tester := testers[testName]
+	if tester == nil {
+		fmt.Printf("A '%s' test doesn't exist. There are the following tests: %s\n", testName, getTesterNames(testers))
+		os.Exit(1)
+	}
+	return tester
 }
 
 func composeUsage(basicUsage string, testers map[string]t.Tester) string {
@@ -103,7 +107,17 @@ func getParams() (driver, host, port, user, password, database string) {
 func getEnvVar(name string) (envVar string) {
 	envVar, exists := os.LookupEnv(name)
 	if !exists {
-		panic("You must set env var " + name)
+		fmt.Println("You must set env var " + name)
+		os.Exit(1)
 	}
 	return
+}
+
+func getTesterNames(testers map[string]t.Tester) string {
+	names := []string{}
+	for name, _ := range testers {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return strings.Join(names, ", ")
 }

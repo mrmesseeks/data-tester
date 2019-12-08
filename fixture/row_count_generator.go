@@ -18,7 +18,7 @@ func (this RowCountGenerator) generate(
 		return this.getFluctuationRowCount(fluctuation, rowCountFrom, rowCountTo)
 	}
 
-	return gorand.GetRandBetween(rowCountFrom, rowCountTo)
+	return gorand.GetIntRandBetween(rowCountFrom, rowCountTo)
 }
 
 func (this RowCountGenerator) findFluctuation(

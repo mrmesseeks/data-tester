@@ -3,10 +3,14 @@ github.com/go-sql-driver/mysql v1.4.1/go.mod h1:zAC/RDZ24gD3HViQzih4MyKcchzm+sOG
 github.com/golang/protobuf v1.3.1/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/lib/pq v1.2.0 h1:LXpIM/LZ5xGFhOpXAQUIMM1HdyqzVYM13zNdjCEEcA0=
 github.com/lib/pq v1.2.0/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
+github.com/mattn/go-runewidth v0.0.7 h1:Ei8KR0497xHyKJPAv59M1dkC+rOZCMBJ+t3fZ+twI54=
+github.com/mattn/go-runewidth v0.0.7/go.mod h1:H031xJmbD/WCDINGzjvQ9THkh0rPKHF+m2gUSrubnMI=
 github.com/mixo/gocmd v0.0.0-20191202123612-f854975e5078 h1:n9BwcnGt5Q7Ey+vbL3kuYpN0TJ9VQB7qBF4y8YE+wpI=
 github.com/mixo/gocmd v0.0.0-20191202123612-f854975e5078/go.mod h1:Iqt42/mrgZGW7dm0+yX85QagDVvjs++J1cr4yV9AXHA=
 github.com/mixo/gocmd v0.1.1 h1:2m+qX8Cxt9fDTfhYTKJHY6/4l9v/uT7jn0qEq+FeK6o=
 github.com/mixo/gocmd v0.1.1/go.mod h1:i3FSTn3wmZeTYUS4lKvpLzopgtkKFPfwyWmpCUNolLI=
+github.com/mixo/gocmd v0.1.2 h1:vW3yEC/2uLaRwXlkWAzEp23w4MYeF3kaVtlN79ea9sg=
+github.com/mixo/gocmd v0.1.2/go.mod h1:i3FSTn3wmZeTYUS4lKvpLzopgtkKFPfwyWmpCUNolLI=
 github.com/mixo/godt v0.0.0-20191202124427-37328ed6ab27 h1:gx3WxfhWaQi5oN7/ZhpPvuzH+qP/WFQQrdAFYjsRK3A=
 github.com/mixo/godt v0.0.0-20191202124427-37328ed6ab27/go.mod h1:CfvqvZVgQoA3sIMxxzmbBPXj+v15qqgtBz0mpgX+6Fg=
 github.com/mixo/godt v0.1.0 h1:d/dnYfukTiEeu3c7UDK6CNnu1yjgZQukiQYdJG6dFOA=
@@ -23,6 +27,10 @@ github.com/mixo/gosql v0.0.0-20191202125124-67e600c4897b h1:LIN2+ZaNN8O2fw4tsjAW
 github.com/mixo/gosql v0.0.0-20191202125124-67e600c4897b/go.mod h1:SBdrrOKTOiqApy+ExZ3mAlRkat7dKIh6YnruosFywe4=
 github.com/mixo/gosql v0.1.0 h1:8O9jwSGS2fotpOyQWULpK1kMDIDZLw5IjXhfnSuPFrw=
 github.com/mixo/gosql v0.1.0/go.mod h1:e0ys+BZFnQFJlxSAcbyFrraGMZNtWEb2zQAL546ImoA=
+github.com/mixo/gosql v0.1.1 h1:uxcCHdTMWJfjFzTKIRjVJ5LtrbSONiA5674/qDzuxWI=
+github.com/mixo/gosql v0.1.1/go.mod h1:e0ys+BZFnQFJlxSAcbyFrraGMZNtWEb2zQAL546ImoA=
+github.com/olekukonko/tablewriter v0.0.4 h1:vHD/YYe1Wolo78koG299f7V/VAS08c6IpCLn+Ejf/w8=
+github.com/olekukonko/tablewriter v0.0.4/go.mod h1:zq6QwlOf5SlnkVbMSr5EoBv3636FWnp+qbPhuoO21uA=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/net v0.0.0-20190603091049-60506f45cf65/go.mod h1:HSz+uSET+XFnRR8LxR5pz3Of3rY3CfYBVs4xY44aLks=
 golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=

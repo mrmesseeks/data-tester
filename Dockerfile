@@ -8,4 +8,5 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o data-tester data_
 FROM scratch
 
 COPY --from=builder /go/src/github.com/mixo/data-tester/ /bin/
-CMD ["data-tester"]
+ENTRYPOINT ["data-tester"]
+CMD []

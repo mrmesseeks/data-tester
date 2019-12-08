@@ -7,5 +7,6 @@ require (
 	github.com/mixo/godt v0.1.0
 	github.com/mixo/gorand v0.1.0
 	github.com/mixo/gosql v0.1.1
+	github.com/olekukonko/tablewriter v0.0.4
 	google.golang.org/appengine v1.6.5 // indirect
 )

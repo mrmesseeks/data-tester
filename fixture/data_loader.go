@@ -7,9 +7,10 @@ import (
 )
 
 type DataLoader struct {
-	TableName  string
-	Columns    []string
-	ColumnsSql []string
+	TableName   string
+	Columns     []string
+	ColumnsSql  []string
+	ValueDefinitions [][]interface{}
 }
 
 func (this DataLoader) Load(
@@ -30,7 +31,7 @@ func (this DataLoader) Load(
 
 	for _, currentTime := range godt.GetPeriod(startTime, endTime) {
 		rowCount = rowCountGenerator.generate(rowCountPerDayFrom, rowCountPerDayTo, currentTime, fluctuations)
-		rows = rowGenerator.Generate(rowCount, currentTime)
+		rows = rowGenerator.Generate(rowCount, currentTime, this.ValueDefinitions)
 		db.InsertMultiple(this.TableName, rows, this.Columns)
 	}
 }
