@@ -22,7 +22,7 @@ func (r DayFluctuationTesterResult) IsOk() bool {
 }
 
 func (r DayFluctuationTesterResult) Show() {
-    headerRow := []string{"Group", "Period", "Row Quantity"}
+    headerRow := []string{r.GroupColumn, "Period", "Row Quantity"}
     rows := [][]string{}
 	isFirstGroup := true
 	for group, avgParams := range r.GroupsAvgParams {
