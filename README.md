@@ -8,7 +8,7 @@ docker build -t data-tester:latest .
 ```  
 
 ## Run
-To run I need a env file wth the following env vars:  
+To run you need an env file with the following env vars:  
 - export data_tester_db_driver
 - export data_tester_db_host
 - export data_tester_db_port
