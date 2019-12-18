@@ -18,5 +18,5 @@ To run you need an env file with the following env vars:
 
 A run example:  
 ```console
-docker run --env-file=/path/to/.env data-tester:latest day-fluctuation datatester_fixture date -1 20 10 int_param,float_param group_param a
+docker run --env-file=/path/to/.env data-tester:latest day-fluctuation -tn datatester_fixture -dc date -nc int_param,float_param -gc group_param -di -1 -md 40 -nd 10
 ```
