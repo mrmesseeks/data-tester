@@ -1,50 +1,99 @@
 package tester
 
 import (
-	"github.com/mixo/gosql"
-	c "github.com/mixo/gocmd"
 	"math"
 	"time"
 	"strings"
 	"fmt"
+	"github.com/mixo/gosql"
+	"github.com/urfave/cli/v2"
 )
 
 type DayFluctuationTester struct{}
 
-func (this DayFluctuationTester) GetName() string {
-	return "day-fluctuation"
+func (this DayFluctuationTester) GetCliCommand() *cli.Command {
+	return &cli.Command{
+		Name: "day-fluctuation",
+        Aliases: []string{"df"},
+		Description: "Checks that a day number of rows doesn't differ from an average number of rows per day",
+		Action: func(c *cli.Context) error {
+			tableName := c.String("table-name")
+			dateColumn := c.String("date-column")
+			numericColumns := c.String("numeric-columns")
+			groupColumn := c.String("group-column")
+			filteredGroups := c.String("filtered-groups")
+			dayIndent := c.Int("day-indent")
+			maxDiff := c.Int("max-diff")
+			numberDays := c.Int("number-days")
+			if tableName == "" || dateColumn == "" || numericColumns == "" || groupColumn == ""  || dayIndent == 0 || maxDiff == 0 || numberDays == 0 {
+				cli.ShowCommandHelp(c, "day-fluctuation")
+				return cli.Exit("You must specify the command flags", 1)
+			}
+
+			r := (DayFluctuationTester{}).Test(c.App.Metadata["db"].(gosql.DB), tableName, dateColumn, numericColumns, groupColumn, filteredGroups, dayIndent, maxDiff, numberDays)
+
+			r.Show()
+			if !r.IsOk() {
+				return cli.Exit("", 1)
+			}
+
+			return nil
+		},
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:  "table-name",
+				Aliases: []string{"tn"},
+				Usage: "Specify the table name you want to test",
+			},
+			&cli.StringFlag{
+				Name:  "date-column",
+				Aliases: []string{"dc"},
+				Usage: "Specify the date column that will be used to count rows",
+			},
+			&cli.StringFlag{
+				Name:  "numeric-columns",
+				Aliases: []string{"nc"},
+				Usage: "Specify comma-separated numeric columns which should be checked. For example, amount,price,profit",
+			},
+			&cli.StringFlag{
+				Name:  "group-column",
+				Aliases: []string{"gc"},
+				Usage: "Specify the group column that will be used to count and sum columns within groups",
+			},
+			&cli.StringFlag{
+				Name:  "filtered-groups",
+				Aliases: []string{"fg"},
+				Usage: "Specify comma-separated groups that should be checked",
+			},
+			&cli.IntFlag{
+				Name: "day-indent",
+				Aliases: []string{"di"},
+				Usage: "For which day, check a row count. For example, 1 - tomorrow, 0 - today, -1 - yesterday, -2 the day before yesterday and so on",
+			},
+			&cli.IntFlag{
+				Name: "max-diff",
+				Aliases: []string{"md"},
+				Usage: "Specify the maximum difference in percents between the yesterday row count and the average row count",
+			},
+			&cli.IntFlag{
+				Name: "number-days",
+				Aliases: []string{"nd"},
+				Usage: "Specify the number of days for which to calculate the average row count",
+			},
+		},
+	}
 }
 
-func (this DayFluctuationTester) GetDescription() string {
-	return "Checks that a day number of rows doesn't differ" +
-		"from an average number of rows per day"
-}
+func (this DayFluctuationTester) Test(db gosql.DB,
+	tableName, dateColumn, numericColumnsString, groupColumn, filteredGroupsString string,
+	dayIndent, maxDiff, numberDays int) TestResult {
 
-func (this DayFluctuationTester) GetArgs() c.ArgCollection {
-	return c.NewArgCollection([]c.Arg{
-		c.NewArg("table-name", "", true, "Specify the table name you want to test"),
-		c.NewArg("date-column", "", true, "Specify the date column that will be used to count rows"),
-		c.NewArg("day-indent", 0, true, "For which day, check a row count. For example, 1 - tomorrow, 0 - today, -1 - yesterday, -2 the day before yesterday and so on"),
-		c.NewArg("max-diff", 0, true, "Specify the maximum difference in percents between the yesterday row count and the average row count "),
-		c.NewArg("day-count", 0, true, "Specify the number of days for which to calculate the average row count"),
-		c.NewArg("numeric-columns", "", true, "Specify comma-separated numeric columns which should be checked. For example, amount,price,profit"),
-		c.NewArg("group-column", "", true, "Specify the group column that will be used to count and sum columns within groups"),
-		c.NewArg("filtered-groups", "", false, "Specify comma-separated groups that should be checked. Leave the argument empty '', if you want to check all groups"),
-	})
-}
-
-func (this DayFluctuationTester) Test(db gosql.DB, args c.ArgCollection) TestResult {
 	quantityColumn := "_quantity"
-	tableName := args.G("table-name").(string)
-	dateColumn := args.G("date-column").(string)
-    dayCount := args.G("day-count").(int)
-	day := time.Now().AddDate(0, 0, args.G("day-indent").(int))
-	startDate := day.AddDate(0, 0, -dayCount)
+	day := time.Now().AddDate(0, 0, dayIndent)
+	startDate := day.AddDate(0, 0, -numberDays)
 	endDate := day.AddDate(0, 0, -1)
-	numericColumns := strings.Split(args.G("numeric-columns").(string), ",")
-	groupColumn := args.G("group-column").(string)
-	maxDiff := args.G("max-diff").(int)
-	filteredGroupStrings := strings.Split(args.G("filtered-groups").(string), ",")
+	numericColumns := strings.Split(numericColumnsString, ",")
+	filteredGroupStrings := strings.Split(filteredGroupsString, ",")
 	filteredGroups := make([]interface{}, 0)
 	for _, filteredGroupString := range filteredGroupStrings {
 		if filteredGroupString != ""  {
@@ -52,7 +101,7 @@ func (this DayFluctuationTester) Test(db gosql.DB, args c.ArgCollection) TestRes
 		}
 	}
 
-	avgParams := db.GetAvgRowParamsPerDay(tableName, dateColumn, startDate, endDate, dayCount, quantityColumn, numericColumns, groupColumn, filteredGroups)
+	avgParams := db.GetAvgRowParamsPerDay(tableName, dateColumn, startDate, endDate, numberDays, quantityColumn, numericColumns, groupColumn, filteredGroups)
 	dayParams := db.GetRowParamsOnDate(tableName, dateColumn, day, quantityColumn, numericColumns, groupColumn, filteredGroups)
 	groupsAvgParams := this.groupMaps(avgParams, groupColumn)
 	groupsDayParams := this.groupMaps(dayParams, groupColumn)

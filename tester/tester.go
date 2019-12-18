@@ -1,15 +1,11 @@
 package tester
 
 import (
-	"github.com/mixo/gosql"
-	c "github.com/mixo/gocmd"
+	"github.com/urfave/cli/v2"
 )
 
 type Tester interface{
-    GetName() string
-    GetDescription() string
-    GetArgs() c.ArgCollection
-	Test(gosql.DB, c.ArgCollection) TestResult
+    GetCliCommand() *cli.Command
 }
 
 type TestResult interface{
