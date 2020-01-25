@@ -71,7 +71,7 @@ func createApp() *cli.App {
 			pass := c.String("data_tester_db_password")
 			name := c.String("data_tester_db_name")
 			if driver == "" || host == "" || port == "" || user == "" || pass == "" || name == "" {
-				return cli.Exit("You must specify the database flags", 1)
+				return cli.Exit("You must specify the database params", 1)
 			}
 
 			c.App.Metadata["db"] = gosql.DB{driver, host, port, user, pass, name}
